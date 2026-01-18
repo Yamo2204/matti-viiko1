@@ -1,60 +1,41 @@
 const express = require('express');
-const app = express();
-const PORT = 3000;
 
-// Middleware to parse JSON
+const app = express();
 app.use(express.json());
 
-// In-memory data store
-let items = [
-  { id: 1, name: 'Item 1', description: 'First item' },
-  { id: 2, name: 'Item 2', description: 'Second item' }
-];
+let items = [{ id: 1, name: 'Item One' }];
 
-// GET /api/items - Read data
+// GET - قراءة بيانات
 app.get('/api/items', (req, res) => {
   res.status(200).json(items);
 });
 
-// POST /api/items - Send data
+// POST - إرسال بيانات
 app.post('/api/items', (req, res) => {
   const newItem = req.body;
   if (!newItem.name) {
     return res.status(400).json({ error: 'Name is required' });
   }
-  newItem.id = items.length + 1;
-  items.push(newItem);
+  items.push({ id: Date.now(), ...newItem });
   res.status(201).json(newItem);
 });
 
-// PUT /api/items/:id - Modify data
-app.put('/api/items/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const itemIndex = items.findIndex(item => item.id === id);
-  if (itemIndex === -1) {
-    return res.status(404).json({ error: 'Item not found' });
-  }
-  const updatedItem = { ...items[itemIndex], ...req.body };
-  items[itemIndex] = updatedItem;
-  res.status(200).json(updatedItem);
-});
-
-// DELETE /api/items/:id - Delete data
+// DELETE - حذف (وهمي)
 app.delete('/api/items/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const itemIndex = items.findIndex(item => item.id === id);
-  if (itemIndex === -1) {
-    return res.status(404).json({ error: 'Item not found' });
-  }
-  items.splice(itemIndex, 1);
-  res.status(204).send();
+  res.status(501).json({ error: 'Delete not implemented yet' });
 });
 
-// 404 for unknown routes
+// PUT - تعديل (وهمي)
+app.put('/api/items/:id', (req, res) => {
+  res.status(501).json({ error: 'Update not implemented yet' });
+});
+
+// 404 للموارد غير الموجودة
 app.use((req, res) => {
   res.status(404).json({ error: 'Resource not found' });
 });
 
+const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
